@@ -53,6 +53,11 @@ As demais metodologias, para *ano0*, *ano1* e *ano2*, são:
 Cabe salientar que, caso não seja informada uma metodologia para 
 determinada receita, ela não receberá valores nas colunas de previsão.
 
+## Configurações
+
+A configuração restringe-se a preencher algumas variáveis no início do 
+script *prever.py* além de preencher *mapeamento.xlsx*. 
+
 ## Resultados
 
 Os resultados são exportados para uma planilha do MS Excel em 
