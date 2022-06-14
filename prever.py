@@ -114,6 +114,32 @@ balrec3 = pd.read_csv(dados, sep=';', decimal=',', thousands='.', parse_dates=Tr
     'arquivo': str
 })
 
+
+logging.info('\tano base - 4...')
+dados = StringIO(str(from_path(r'dados/balrec4.csv').best()))
+balrec4 = pd.read_csv(dados, sep=';', decimal=',', thousands='.', parse_dates=True, infer_datetime_format=True, dtype={
+    'codigo_receita': str,
+    'orgao': int,
+    'uniorcam': int,
+    'receita_orcada': float,
+    'receita_realizada': float,
+    'recurso_vinculado': int,
+    'especificacao_receita': str,
+    'tipo_nivel': str,
+    'numero_nivel': int,
+    'caracteristica_peculiar_receita': int,
+    'previsao_atualizada': float,
+    #'complemento_recurso_vinculado': int,
+    # 'fonte_recurso_stn': int,
+    # 'acompanhamento_execucao_orcamentaria': int,
+    'data_inicial': str,
+    'data_final': str,
+    'data_geracao': str,
+    'cnpj': str,
+    'entidade': str,
+    'arquivo': str
+})
+
 logging.info('Preparando receita reestimada no Ano-1')
 balrec1['receita_reestimada'] = np.where(balrec1['receita_realizada'] > balrec1['previsao_atualizada'], balrec1['receita_realizada'], balrec1['previsao_atualizada'])
 
@@ -121,6 +147,7 @@ logging.info('Buscando a receita realizada dos anos anteriores...')
 valores_1 = []
 valores_2 = []
 valores_3 = []
+valores_4 = []
 for index, row in mapeamento.iterrows():
     # codigo = row['codigo']
     # descricao = row['descricao']
@@ -128,6 +155,7 @@ for index, row in mapeamento.iterrows():
     codigo_1 = row['ano_1']
     codigo_2 = row['ano_2']
     codigo_3 = row['ano_3']
+    codigo_4 = row['ano_4']
     val_1 = balrec1[balrec1['codigo_receita']==codigo_1][['codigo_receita', 'receita_reestimada']].groupby(by='codigo_receita').sum()
     if len(val_1) > 0:
         val_1 = round(float(val_1['receita_reestimada'][0]), 2)
@@ -145,12 +173,20 @@ for index, row in mapeamento.iterrows():
         val_3 = round(float(val_3['receita_realizada'][0]), 2)
     else:
         val_3 = 0.0
+    val_4 = balrec4[balrec4['codigo_receita'] == codigo_4][['codigo_receita', 'receita_realizada']].groupby(
+        by='codigo_receita').sum()
+    if len(val_4) > 0:
+        val_4 = round(float(val_4['receita_realizada'][0]), 2)
+    else:
+        val_4 = 0.0
     valores_1.append(val_1)
     valores_2.append(val_2)
     valores_3.append(val_3)
+    valores_4.append(val_4)
 mapeamento['val_1'] = valores_1
 mapeamento['val_2'] = valores_2
 mapeamento['val_3'] = valores_3
+mapeamento['val_4'] = valores_4
 
 logging.info('Calculando as previsões da receita...')
 valores0 = []
@@ -161,13 +197,13 @@ for index, row in mapeamento.iterrows():
         case 'folha':
             val0, val1, val2 = metodo.indice(folha0, folha1, folha2, row['val_1'])
         case 'media_ipca':
-            val0, val1, val2 = metodo.media_indice(ipca0, ipca1, ipca2, row['val_1'], row['val_2'], row['val_3'])
+            val0, val1, val2 = metodo.media_indice(ipca0, ipca1, ipca2, row['val_1'], row['val_2'], row['val_3'], row['val_4'])
         case 'ipca':
             val0, val1, val2 = metodo.indice(ipca0, ipca1, ipca2, row['val_1'])
         case 'crescimento':
-            val0, val1, val2 = metodo.crescimento(row['val_1'], row['val_2'], row['val_3'])
+            val0, val1, val2 = metodo.crescimento(row['val_1'], row['val_2'], row['val_3'], row['val_4'])
         case 'media':
-            val0, val1, val2 = metodo.media(row['val_1'], row['val_2'], row['val_3'])
+            val0, val1, val2 = metodo.media(row['val_1'], row['val_2'], row['val_3'], row['val_4'])
         case _:
             val0 = 0.0
             val1 = 0.0

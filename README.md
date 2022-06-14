@@ -19,6 +19,8 @@ O **ano base** (ano "zero") é o primeiro ano da previsão.
 
 **ano_3** é o terceiro ano anterior ao *ano 0*
 
+**ano_4** é o quarto ano anterior ao *ano 0*
+
 **ano1** é o ano primeiro ano posterior ao *ano 0*
 
 **ano2** é o ano segundo ano posterior ao *ano 0*
@@ -26,6 +28,7 @@ O **ano base** (ano "zero") é o primeiro ano da previsão.
 Por exemplo, se estivermos em 2022 com o objetivo de fazer a previsão para 
 a LDO (ou LOA) para 2023, teremos:
 
+- ano_4 = 2019
 - ano_3 = 2020
 - ano_2 = 2021
 - ano_1 = 2022
@@ -35,7 +38,7 @@ a LDO (ou LOA) para 2023, teremos:
 
 ## Metodologias
 
-Para os **ano_3** e **ano_2**, considera-se o valor arrecadado em cada natureza
+Para os **ano_4**, **ano_3** e **ano_2**, considera-se o valor arrecadado em cada natureza
 de receita.
 
 Para o **ano_1**, considera-se o *valor reestimado*, que corresponde ao maior 
