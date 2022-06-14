@@ -215,6 +215,24 @@ mapeamento['val0'] = valores0
 mapeamento['val1'] = valores1
 mapeamento['val2'] = valores2
 
+logging.info('Reordenando colunas...')
+mapeamento = mapeamento[[
+    'codigo',
+    'descricao',
+    'metodo',
+    'ano_4',
+    'ano_3',
+    'ano_2',
+    'ano_1',
+    'val_4',
+    'val_3',
+    'val_2',
+    'val_1',
+    'val0',
+    'val1',
+    'val2'
+]]
+
 logging.info('Salvando o resultado...')
 mapeamento.to_excel(r'output/resultado.xlsx')
 
