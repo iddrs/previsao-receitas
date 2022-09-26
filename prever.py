@@ -11,12 +11,17 @@ from io import StringIO
 from metodos import metodo
 
 # Configurações
-folha0 = (0.02 + 0.09)# crescimento vegetativo + inpc
-folha1 = (0.02 + 0.05)# crescimento vegetativo + inpc
-folha2 = (0.02 + 0.05)# crescimento vegetativo + inpc
-ipca0 = 0.1
-ipca1 = 0.08
-ipca2 = 0.07
+# Crescimento vegetativo: Avaliação Atuarial de 2022 / Tabela 6 – Sumário Executivo das hipóteses financeiras e biométricas / Taxa Real de Crescimento da Remuneração
+# IPCA 2022, 2023, 2024 Sistema Expectativas BCB / mediana da pesquisa de 23/09/2022
+folha0 = (0.032 + 0.058830)# crescimento vegetativo + inpc
+folha1 = (0.032 + 0.05)# crescimento vegetativo + inpc
+folha2 = (0.032 + 0.035)# crescimento vegetativo + inpc
+# IPCA 2023, 2024, 2025 Sistema Expectativas BCB / mediana da pesquisa de 23/09/2022
+ipca0 = 0.05
+ipca1 = 0.035
+ipca2 = 0.03
+
+arred = -3 # arredonda para o milhar e valores menores que 1.000 viram 0
 
 # Configuração do logger
 logging.basicConfig(
@@ -35,7 +40,10 @@ mapeamento = pd.read_excel(r'mapeamento.xlsx', sheet_name='mapeamento', dtype={
     'metodo': str,
     'ano1': str,
     'ano2': str,
-    'ano3': str
+    'ano3': str,
+    'manual_0': float,
+    'manual_1': float,
+    'manual_2': float
 })
 
 logging.info('Carregando dados de receita passados...')
@@ -195,15 +203,17 @@ valores2 = []
 for index, row in mapeamento.iterrows():
     match row['metodo']:
         case 'folha':
-            val0, val1, val2 = metodo.indice(folha0, folha1, folha2, row['val_1'])
+            val0, val1, val2 = metodo.indice(folha0, folha1, folha2, row['val_1'], arred)
         case 'media_ipca':
-            val0, val1, val2 = metodo.media_indice(ipca0, ipca1, ipca2, row['val_1'], row['val_2'], row['val_3'], row['val_4'])
+            val0, val1, val2 = metodo.media_indice(ipca0, ipca1, ipca2, row['val_1'], row['val_2'], row['val_3'], row['val_4'], arred)
         case 'ipca':
-            val0, val1, val2 = metodo.indice(ipca0, ipca1, ipca2, row['val_1'])
+            val0, val1, val2 = metodo.indice(ipca0, ipca1, ipca2, row['val_1'], arred)
         case 'crescimento':
-            val0, val1, val2 = metodo.crescimento(row['val_1'], row['val_2'], row['val_3'], row['val_4'])
+            val0, val1, val2 = metodo.crescimento(row['val_1'], row['val_2'], row['val_3'], row['val_4'], arred)
         case 'media':
-            val0, val1, val2 = metodo.media(row['val_1'], row['val_2'], row['val_3'], row['val_4'])
+            val0, val1, val2 = metodo.media(row['val_1'], row['val_2'], row['val_3'], row['val_4'], arred)
+        case 'manual':
+            val0, val1, val2 = metodo.manual(row['manual_0'], row['manual_1'], row['manual_2'])
         case _:
             val0 = 0.0
             val1 = 0.0
